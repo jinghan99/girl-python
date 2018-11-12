@@ -7,6 +7,7 @@ import re
 from bs4 import BeautifulSoup
 import threading
 import os
+import re
 
 
 # 请求数据
@@ -51,9 +52,13 @@ def get_img_url(imgUrlList):
             continue
         # 判断名称是否过长，如果超过30 则截取 因过长会报错
         namestr = item[0].strip() if len(item[0]) < 30 else item[0].strip()[:27] +'...'
-        print("item[1][-3:] : "+item[1][-3:])
 
-        imgPath = os.path.join(namestr,"."+item[1][-3:])
+        namestr = re.sub("[\s+\.\!\/_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", '', namestr)
+
+        imgPath = os.path.join(filePath,(namestr+item[1][-4:]))
+
+
+        print("imgPath: "+imgPath)
 
         '''
         通过多线程 方式下载图片 增加速度
@@ -77,7 +82,7 @@ def save_mp(imgPath,url):
     ** 链接最后的数字表示抓取的数据页码，由于首页的1可以不写，也可以写上
     ** 为了大家更好的理解多页的表示，这里我们仅抓取一页，并且链接后面写有页码1
     '''
-urlStr = 'http://www.budejie.com/video/1'
+urlStr = 'http://www.budejie.com/pic'
 html = get_response(urlStr)
 ll = get_content(html)
 get_img_url(ll)
